@@ -1,0 +1,330 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.rosary-container {
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    gap: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    align-items: flex-start; /* This aligns children to the top */
+    min-height: auto; /* Remove any fixed height */
+}
+
+.content-column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+}
+
+.mystery-title {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.prayer-section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 150px); /* Adjust based on your needs */
+}
+
+.prayer-type {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #87ceeb;
+}
+
+.prayer-text {
+    white-space: pre-line;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ffed4a);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.position-indicator {
+    font-size: 0.9em;
+    margin: 10px 0;
+    color: #b0c4de;
+}
+
+.bead-indicator {
+    font-size: 2em;
+    margin: 20px 0;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.controls {
+    margin-top: auto;
+    font-size: 0.9em;
+    color: #b0c4de;
+    padding-top: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.decade-counter {
+    font-size: 1.2em;
+    margin: 15px 0;
+    color: #98fb98;
+}
+
+/* Rosary Visual Styles */
+.rosary-visual-container {
+    flex: 1;
+    display: none;
+    position: relative;
+    min-width: 0; /* Prevent flex item from overflowing */
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.rosary-visual-container.show {
+    display: block;
+}
+.visual-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.rosary-chain {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    position: relative;
+    min-height: 400px;
+}
+
+/* Cross and initial prayers */
+.cross {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 30px;
+    background: #8B4513;
+    border-radius: 2px;
+}
+
+.cross::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: -5px;
+    width: 30px;
+    height: 14px;
+    background: #8B4513;
+    border-radius: 2px;
+}
+
+/* Opening prayers chain */
+.opening-chain {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Main rosary loop */
+.rosary-loop {
+    width: 200px;
+    height: 200px;
+}
+
+/* Decades positioned around the loop */
+.decade {
+    position: absolute;
+}
+
+.decade-1 { top: -15px; left: 50%; transform: translateX(-50%); }
+.decade-2 { top: 20px; right: -15px; transform-origin: center; transform: rotate(72deg); }
+.decade-3 { bottom: 10px; right: 20px; transform-origin: center; transform: rotate(144deg); }
+.decade-4 { bottom: 10px; left: 20px; transform-origin: center; transform: rotate(216deg); }
+.decade-5 { top: 20px; left: -15px; transform-origin: center; transform: rotate(288deg); }
+
+/* Bead styles */
+.rosary-bead {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 2px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    border: 2px solid transparent;
+    position: relative;
+    display: inline-block;
+}
+
+.rosary-bead.hail-mary {
+    background: #87ceeb;
+    width: 10px;
+    height: 10px;
+}
+
+.rosary-bead.our-father {
+    background: #ffd700;
+    width: 16px;
+    height: 16px;
+}
+
+.rosary-bead.glory-be {
+    background: #9370db;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.rosary-bead.mystery {
+    background: #ff6b6b;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+}
+
+.rosary-bead.apostles-creed {
+    background: #32cd32;
+    width: 18px;
+    height: 18px;
+}
+
+.rosary-bead.current {
+    box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    transform: scale(1.4);
+    border: 2px solid white;
+    animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.rosary-bead.completed {
+    opacity: 0.4;
+    filter: grayscale(70%);
+}
+
+@keyframes pulse {
+    from { box-shadow: 0 0 20px currentColor; }
+    to { box-shadow: 0 0 30px currentColor, 0 0 50px currentColor; }
+}
+
+.decade-beads {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.opening-prayers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.closing-prayers {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Medal at center */
+.center-medal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #C0C0C0;
+    border-radius: 50%;
+    border: 2px solid #ffd700;
+    z-index: 10;
+}
+
+@media (max-width: 900px) {
+    .rosary-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .rosary-visual-container {
+        order: -1; /* Move visual to top on mobile */
+        margin-bottom: 20px;
+    }
+    .content-column {
+        height: auto;
+    }
+    .mystery-title {
+        font-size: 1.4em;
+    }
+    .controls {
+        margin-top: 20px;
+    }
+    .prayer-type {
+        font-size: 1.2em;
+    }
+    
+    .prayer-text {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .rosary-chain {
+        width: 300px;
+        height: 400px;
+        transform: scale(0.8);
+    }
+}

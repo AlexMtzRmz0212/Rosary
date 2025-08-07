@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosary</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="rosary-container">
+        <div class="content-column">
+            <div id="mystery-title" class="mystery-title"></div>
+            <div id="prayer-section" class="prayer-section">
+                <div id="prayer-type" class="prayer-type"></div>
+                <div id="bead-indicator" class="bead-indicator"></div>
+                <div id="prayer-text" class="prayer-text"></div>
+            </div>
+            
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+
+            <div id="position-indicator" class="position-indicator"></div>
+            <div id="decade-counter" class="decade-counter"></div>
+            
+            <div class="controls">
+                <strong>Controls:</strong><br>
+                <span id="control-text"> ⬅️ Backspace: Previous prayer | Spacebar: Next prayer ➡️ </span>
+            </div>
+        </div>
+        
+        <div id="rosary-visual-container" class="rosary-visual-container">
+            <div class="visual-wrapper"></div>
+                <div class="rosary-chain">
+                    <!-- Cross -->
+                    <div class="cross" id="bead-cross"></div>
+                    
+                    <!-- Opening prayers chain -->
+                    <div class="opening-chain">
+                        <div class="opening-prayers" id="opening-prayers-beads"></div>
+                    </div>
+
+                    <!-- Main rosary loop -->
+                    <div class="rosary-loop">
+                        <!-- Center medal -->
+                        <div class="center-medal"></div>
+                        
+                        <!-- Five decades around the loop -->
+                        <div class="decade decade-1" id="decade-1-beads"></div>
+                        <div class="decade decade-2" id="decade-2-beads"></div>
+                        <div class="decade decade-3" id="decade-3-beads"></div>
+                        <div class="decade decade-4" id="decade-4-beads"></div>
+                        <div class="decade decade-5" id="decade-5-beads"></div>
+                    </div>
+
+                    <!-- Closing prayers -->
+                    <div class="closing-prayers" id="closing-prayers-beads"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
