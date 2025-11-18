@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rosary</title>
+    <title>Rosary - Multi-Language</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Add selected languages indicator -->
+    <div id="selected-languages" class="selected-languages"></div>
+    
     <div class="rosary-container">
         <div class="content-column">
+            <!-- Modified to support multiple languages -->
             <div id="mystery-title" class="mystery-title"></div>
+            
             <div id="prayer-section" class="prayer-section">
                 <div id="prayer-type" class="prayer-type"></div>
                 <div id="bead-indicator" class="bead-indicator"></div>
@@ -25,12 +30,15 @@
             
             <div class="controls">
                 <strong>Controls:</strong><br>
-                <span id="control-text"> ⬅️ Backspace: Previous prayer | Spacebar: Next prayer ➡️ </span>
+                <span id="control-text"> 
+                    ⬅️ Backspace: Previous prayer | Spacebar: Next prayer ➡️ <br>
+                    R: Reset | Number keys: Select languages
+                </span>
             </div>
         </div>
         
         <div id="rosary-visual-container" class="rosary-visual-container">
-            <div class="visual-wrapper"></div>
+            <div class="visual-wrapper">
                 <div class="rosary-chain">
                     <!-- Cross -->
                     <div class="cross" id="bead-cross"></div>
@@ -42,9 +50,6 @@
 
                     <!-- Main rosary loop -->
                     <div class="rosary-loop">
-                        <!-- Center medal -->
-                        <div class="center-medal"></div>
-                        
                         <!-- Five decades around the loop -->
                         <div class="decade decade-1" id="decade-1-beads"></div>
                         <div class="decade decade-2" id="decade-2-beads"></div>

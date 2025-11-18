@@ -284,7 +284,7 @@ body {
 /* Medal at center */
 .center-medal {
     position: absolute;
-    top: 50%;
+    top: 10%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 20px;
@@ -326,5 +326,101 @@ body {
         width: 300px;
         height: 400px;
         transform: scale(0.8);
+    }
+}
+
+/* Multi-language styles */
+.selected-languages {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+}
+
+.selected-languages div {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-title {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    padding: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.prayer-type-language {
+    margin-bottom: 8px;
+    font-size: 1.1em;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.prayer-text-language {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #87ceeb;
+}
+
+.language-label {
+    font-weight: bold;
+    color: #87ceeb;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prayer-content {
+    white-space: pre-line;
+    line-height: 1.5;
+}
+
+.language-separator {
+    border: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    margin: 20px 0;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Update existing styles for better multi-language support */
+.prayer-text {
+    max-height: 400px; /* Increased for multiple languages */
+    overflow-y: auto;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+/* Mobile adjustments for multi-language */
+@media (max-width: 900px) {
+    .selected-languages {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .prayer-text {
+        max-height: 300px;
+    }
+    
+    .prayer-text-language {
+        padding: 10px;
+        margin-bottom: 15px;
     }
 }
