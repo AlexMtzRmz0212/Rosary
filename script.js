@@ -14,101 +14,85 @@ let rosaryStructure = [
     }
 ];
 
-const baseStructure = [
-    // Opening
-    { type: "Sign of the Cross", text: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.", bead: "✟", mystery: "", beadType: "cross" },
-    { type: "Apostles' Creed", text: 
+// BaseStructure: shared prayer texts factored out and Hail Marys generated to avoid repetition
+const PRAYERS = {
+    signOfCross: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.",
+    apostlesCreed:
         `I believe in God, the Father almighty, Creator of heaven and earth;
-        and in Jesus Christ, His only Son, Our Lord,
-        Who was conceived by the Holy Spirit, born of the Virgin Mary,
-        suffered under Pontius Pilate, was crucified, died, and was buried.
-        He descended into hell; on the third day He rose again from the dead;
-        He ascended into Heaven, and is seated at the right hand of God, the Father almighty;
-        from there He will come to judge the living and the dead.
-        I believe in the Holy Spirit, the holy Catholic Church,
-        the communion of saints, the forgiveness of sins,
-        the resurrection of the body, and life everlasting.
+and in Jesus Christ, His only Son, Our Lord,
+Who was conceived by the Holy Spirit, born of the Virgin Mary,
+suffered under Pontius Pilate, was crucified, died, and was buried.
+He descended into hell; on the third day He rose again from the dead;
+He ascended into Heaven, and is seated at the right hand of God, the Father almighty;
+from there He will come to judge the living and the dead.
+I believe in the Holy Spirit, the holy Catholic Church,
+the communion of saints, the forgiveness of sins,
+the resurrection of the body, and life everlasting.
 
-        Amen.`,
-    bead: "○", mystery: "", beadType: "apostles-creed" },
-    { type: "Our Father", 
-        text: `Our Father, Who art in heaven,
-        Hallowed be Thy Name.
-        Thy Kingdom come.
-        Thy Will be done, on earth as it is in Heaven.
-        Give us this day our daily bread.
-        And forgive us our trespasses,
-        as we forgive those who trespass against us.
-        And lead us not into temptation,
-        but deliver us from evil.
+Amen.`,
+    ourFather:
+        `Our Father, Who art in heaven,
+Hallowed be Thy Name.
+Thy Kingdom come.
+Thy Will be done, on earth as it is in Heaven.
+Give us this day our daily bread.
+And forgive us our trespasses,
+as we forgive those who trespass against us.
+And lead us not into temptation,
+but deliver us from evil.
 
-        Amen.`,
-    bead: "●", mystery: "", beadType: "our-father" },
-
-    // Three Hail Marys for Faith, Hope, and Charity
-    { type: "Hail Mary (for Faith)", text: 
+Amen.`,
+    hailMary:
         `Hail Mary,
-        Full of Grace,
-        The Lord is with thee.
-        Blessed art thou among women,
-        and blessed is the fruit
-        of thy womb, Jesus.
-        Holy Mary,
-        Mother of God,
-        pray for us sinners now,
-        and at the hour of death.
+Full of Grace,
+The Lord is with thee.
+Blessed art thou among women,
+and blessed is the fruit
+of thy womb, Jesus.
+Holy Mary,
+Mother of God,
+pray for us sinners now,
+and at the hour of death.
 
-        Amen.`, 
-        bead: "○", mystery: "", beadType: "hail-mary" },
-    { type: "Hail Mary (for Hope)", text: 
-        `Hail Mary,
-        Full of Grace,
-        The Lord is with thee.
-        Blessed art thou among women,
-        and blessed is the fruit
-        of thy womb, Jesus.
-        Holy Mary,
-        Mother of God,
-        pray for us sinners now,
-        and at the hour of death.
-
-        Amen.`, 
-        bead: "○", mystery: "", beadType: "hail-mary" },
-    { type: "Hail Mary (for Charity)", text: 
-        `Hail Mary,
-        Full of Grace,
-        The Lord is with thee.
-        Blessed art thou among women,
-        and blessed is the fruit
-        of thy womb, Jesus.
-        Holy Mary,
-        Mother of God,
-        pray for us sinners now,
-        and at the hour of death.
-
-        Amen.`, 
-        bead: "○", mystery: "", beadType: "hail-mary" },
-    { type: "Glory Be", text: 
+Amen.`,
+    gloryBe:
         `Glory be to the Father,
-        and to the Son,
-        and to the Holy Spirit.
-        As it was in the beginning,
-        is now,
-        and ever shall be,
-        world without end.
+and to the Son,
+and to the Holy Spirit.
+As it was in the beginning,
+is now,
+and ever shall be,
+world without end.
 
-        Amen.`, 
-        bead: "✦", mystery: "", beadType: "glory-be" },
-    { type: "Fatima Prayer", text: 
+Amen.`,
+    fatima:
         `O my Jesus,
-        forgive us our sins,
-        save us from the fires of hell,
-        and lead all souls to Heaven,
-        especially those in most need of Thy mercy.
+forgive us our sins,
+save us from the fires of hell,
+and lead all souls to Heaven,
+especially those in most need of Thy mercy.
 
-        Amen.`, 
-        bead: "✦", mystery: "", beadType: "glory-be" },
-        ];
+Amen.`
+};
+
+const makeHailMary = (label) => ({
+    type: label ? `Hail Mary (${label})` : "Hail Mary",
+    text: PRAYERS.hailMary,
+    bead: "○",
+    mystery: "",
+    beadType: "hail-mary"
+});
+
+const baseStructure = [
+    { type: "Sign of the Cross", text: PRAYERS.signOfCross, bead: "✟", mystery: "", beadType: "cross" },
+    { type: "Apostles' Creed", text: PRAYERS.apostlesCreed, bead: "○", mystery: "", beadType: "apostles-creed" },
+    { type: "Our Father", text: PRAYERS.ourFather, bead: "●", mystery: "", beadType: "our-father" },
+    makeHailMary("for Faith"),
+    makeHailMary("for Hope"),
+    makeHailMary("for Charity"),
+    { type: "Glory Be", text: PRAYERS.gloryBe, bead: "✦", mystery: "", beadType: "glory-be" },
+    { type: "Fatima Prayer", text: PRAYERS.fatima, bead: "✦", mystery: "", beadType: "glory-be" }
+];
 
 const mysteries = {
     joyful: {
@@ -257,7 +241,7 @@ function buildRosary() {
         // Mystery Meditation
         rosaryStructure.push({
             type: `${getOrdinal(decade + 1)} Mystery`,
-            text: `${selectedMysteries.names[decade]}\n\n${selectedMysteries.meditations[decade]}\n\nFruit of the Mystery: ${selectedMysteries.names[decade]}`,
+            text: `${selectedMysteries.names[decade]}\n\n${selectedMysteries.meditations[decade]}\n\nFruit of the Mystery: ${selectedMysteries.fruits[decade]}`,
             bead: "🌟",
             mystery: selectedMysteries.names[decade],
             isMeditation: true,
