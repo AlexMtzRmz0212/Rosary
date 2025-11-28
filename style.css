@@ -375,6 +375,8 @@ body {
 
 .rosary-container.swipe-right {
     transform: translateX(5px);
+}
+
 /* Final Slide Styles */
 .final-slide {
     position: fixed;
