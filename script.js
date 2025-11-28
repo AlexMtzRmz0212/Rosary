@@ -643,6 +643,67 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// Touch events for mobile swipe
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const swipeThreshold = 50; // Minimum swipe distance in pixels
+    const swipeDistance = touchEndX - touchStartX;
+    
+    if (Math.abs(swipeDistance) < swipeThreshold) return;
+    
+    if (swipeDistance > 0) {
+        // Swipe right - go to previous prayer
+        if (currentPosition > 0) {
+            currentPosition--;
+            updateDisplay();
+        }
+    } else {
+        // Swipe left - go to next prayer
+        if (currentPosition < rosaryStructure.length - 1) {
+            currentPosition++;
+            updateDisplay();
+        }
+    }
+}
+
+function isMobileDevice() {
+    return (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0));
+}
+
+function updateControlsDisplay() {
+    const controlText = document.getElementById('control-text');
+    const mobileControls = document.getElementById('mobile-controls');
+    
+    if (isMobileDevice()) {
+        controlText.style.display = 'none';
+        mobileControls.style.display = 'block';
+    } else {
+        controlText.style.display = 'block';
+        mobileControls.style.display = 'none';
+    }
+}
+
+
+// Initialize mobile detection
+updateControlsDisplay();
+
+// Update controls on resize (in case of device rotation)
+window.addEventListener('resize', updateControlsDisplay);
+
+
 // Initial load
 resetRosary();
 updateDisplay();
