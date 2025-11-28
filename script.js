@@ -590,17 +590,6 @@ function resetToStart() {
     updateDisplay();
 }
 
-function resetRosary() {
-    selectedMysteries = null;
-    mysteryType = '';
-    rosaryBuilt = false;
-    allBeadElements = [];
-    rosaryStructure = [
-        { type: "Day Selection", text: 'Please select which mysteries to pray today:\n\n1. Monday/Saturday - Joyful Mysteries\n2. Tuesday/Friday - Sorrowful Mysteries\n3. Wednesday/Sunday - Glorious Mysteries\n4. Thursday - Luminous Mysteries', bead: "🗓️", mystery: "", isSelection: true }
-    ];
-    document.getElementById('rosary-visual-container').classList.remove('show');
-}
-
 // Keyboard controls
 document.addEventListener('keydown', function(e) {
     const current = rosaryStructure[currentPosition];
