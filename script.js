@@ -362,15 +362,13 @@ function buildRosaryVisual() {
     allBeadElements = [];
     let beadIndex = 0;
     const container = document.querySelector('.rosary-chain');
-    const centerX = container.offsetWidth / 2;
-    const centerY = container.offsetHeight / 2;
     const loopRadius = 120; // Fixed radius for the circle
     const verticalOffset = -80; // Move everything up
 
     // Clear existing beads
     document.querySelectorAll('.rosary-bead').forEach(el => el.remove());
 
-    // Opening beads (vertical line above cross, going bottom to top, moved up)
+    // Opening beads (vertical line above cross, going bottom to top)
     const openingContainer = document.createElement('div');
     openingContainer.className = 'opening-prayers';
     openingContainer.id = 'opening-prayers-beads';
@@ -384,7 +382,7 @@ function buildRosaryVisual() {
     openingContainer.style.gap = '2px';
     container.appendChild(openingContainer);
 
-    for (let i = 2; i < 9; i++) {
+    for (let i = 0; i < 10; i++) {
         const beadEl = document.createElement('div');
         beadEl.className = `rosary-bead ${rosaryStructure[i].beadType}`;
         beadEl.id = `visual-bead-${beadIndex}`;
@@ -393,7 +391,7 @@ function buildRosaryVisual() {
         beadIndex++;
     }
 
-    // Main loop (circle), moved up
+    // Main loop (circle)
     const loopContainer = document.createElement('div');
     loopContainer.className = 'rosary-loop';
     loopContainer.style.position = 'absolute';
@@ -406,7 +404,7 @@ function buildRosaryVisual() {
     loopContainer.style.borderRadius = '50%';
     container.appendChild(loopContainer);
 
-    // Center medal, moved up
+    // Center medal
     const centerMedal = document.createElement('div');
     centerMedal.className = 'center-medal';
     centerMedal.style.position = 'absolute';
@@ -456,7 +454,7 @@ function buildRosaryVisual() {
         beadIndex++;
     }
 
-    // Closing beads (vertical line above loop, bottom to top), moved up
+    // Closing beads (vertical line above loop, bottom to top)
     const closingContainer = document.createElement('div');
     closingContainer.className = 'closing-prayers';
     closingContainer.id = 'closing-prayers-beads';
