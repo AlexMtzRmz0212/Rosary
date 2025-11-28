@@ -27,7 +27,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
     align-items: flex-start; /* This aligns children to the top */
-    min-height: auto; /* Remove any fixed height */
+    min-height: auto; 
 }
 
 .content-column {
@@ -327,4 +327,52 @@ body {
         height: 400px;
         transform: scale(0.8);
     }
+}
+
+/* Mobile swipe hint */
+.mobile-controls {
+    font-size: 0.9em;
+    color: #b0c4de;
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 900px) {
+    .rosary-bead {
+        width: 16px !important;
+        height: 16px !important;
+        margin: 3px;
+    }
+    
+    .prayer-text {
+        font-size: 1.1em;
+        line-height: 1.6;
+        padding: 10px;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+    
+    /* Prevent text selection on swipe */
+    .rosary-container {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+}
+
+/* Swipe animation feedback */
+.rosary-container {
+    transition: transform 0.1s ease;
+}
+
+.rosary-container.swipe-left {
+    transform: translateX(-5px);
+}
+
+.rosary-container.swipe-right {
+    transform: translateX(5px);
 }
