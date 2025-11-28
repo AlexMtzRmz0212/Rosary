@@ -14,6 +14,14 @@ let rosaryStructure = [
     }
 ];
 
+const finalSlide = {
+    type: "Completion",
+    text: "Congratulations! You have completed the Rosary.",
+    bead: "🎉",
+    mystery: "",
+    isFinalSlide: true
+};
+
 // BaseStructure: shared prayer texts factored out and Hail Marys generated to avoid repetition
 const PRAYERS = {
     signOfCross: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.",
@@ -336,7 +344,8 @@ function buildRosary() {
             Amen.`,     
             bead: "◊", mystery: "", beadType: "glory-be" },
         { type: "Final Prayer", text: "O God, whose only-begotten Son, by His life, death and resurrection, has purchased for us the rewards of eternal life; grant we beseech Thee, that meditating upon these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.", bead: "✟", mystery: "", beadType: "glory-be" },
-        { type: "Sign of the Cross", text: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.", bead: "✟", mystery: "", beadType: "cross" }
+        { type: "Sign of the Cross", text: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.", bead: "✟", mystery: "", beadType: "cross" },
+        finalSlide
     );
 
     rosaryBuilt = true;
@@ -514,6 +523,12 @@ function updateDisplay() {
         return;
     }
 
+    // Special handling for final slide
+    if (current.isFinalSlide) {
+        showFinalSlide();
+        return;
+    }
+
     // Show mystery title if available
     document.getElementById('mystery-title').textContent = mysteryType || '';
     document.getElementById('prayer-type').textContent = current.type;
@@ -546,6 +561,44 @@ function updateDisplay() {
     document.getElementById('rosary-visual-container').classList.add('show');
     updateBeadHighlight();
     }
+}
+
+function showFinalSlide() {
+    // Hide the main rosary interface
+    document.querySelector('.rosary-container').classList.add('hidden');
+    
+    // Show the final slide
+    document.getElementById('final-slide').classList.remove('hidden');
+    
+    // Set your GIF URL here
+    document.getElementById('final-gif').src = "https://media.tenor.com/bWUeVRqW9-IAAAAi/fast-cat-cat-excited.gif";
+    
+    // Add event listener for the restart button
+    document.getElementById('restart-button').addEventListener('click', resetToStart);
+}
+
+function resetToStart() {
+    // Hide the final slide
+    document.getElementById('final-slide').classList.add('hidden');
+    
+    // Show the main rosary interface
+    document.querySelector('.rosary-container').classList.remove('hidden');
+    
+    // Reset the rosary
+    resetRosary();
+    currentPosition = 0;
+    updateDisplay();
+}
+
+function resetRosary() {
+    selectedMysteries = null;
+    mysteryType = '';
+    rosaryBuilt = false;
+    allBeadElements = [];
+    rosaryStructure = [
+        { type: "Day Selection", text: 'Please select which mysteries to pray today:\n\n1. Monday/Saturday - Joyful Mysteries\n2. Tuesday/Friday - Sorrowful Mysteries\n3. Wednesday/Sunday - Glorious Mysteries\n4. Thursday - Luminous Mysteries', bead: "🗓️", mystery: "", isSelection: true }
+    ];
+    document.getElementById('rosary-visual-container').classList.remove('show');
 }
 
 // Keyboard controls
