@@ -99,7 +99,7 @@ const baseStructure = [
     makeHailMary("for Hope"),
     makeHailMary("for Charity"),
     { type: "Glory Be", text: PRAYERS.gloryBe, bead: "✦", mystery: "", beadType: "glory-be" },
-    { type: "Fatima Prayer", text: PRAYERS.fatima, bead: "✦", mystery: "", beadType: "glory-be" }
+    { type: "Fatima Prayer", text: PRAYERS.fatima, bead: "✦", mystery: "", beadType: "fatima" }
 ];
 
 const mysteries = {
@@ -203,15 +203,21 @@ let rosaryBuilt = false;
 let currentPosition = 0;
 let allBeadElements = [];
 
+function getSuggestedMystery() {
+    // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+    return ['3', '1', '2', '3', '4', '2', '1'][new Date().getDay()];
+}
+
 function resetRosary() {
     selectedMysteries = null;
     mysteryType = '';
     rosaryBuilt = false;
     allBeadElements = [];
     rosaryStructure = [
-        { type: "Day Selection", text: 'Please select which mysteries to pray today:\n\n1. Monday/Saturday - Joyful Mysteries\n2. Tuesday/Friday - Sorrowful Mysteries\n3. Wednesday/Sunday - Glorious Mysteries\n4. Thursday - Luminous Mysteries', bead: "🗓️", mystery: "", isSelection: true }
+        { type: "Day Selection", text: '', bead: "🗓️", mystery: "", isSelection: true }
     ];
     document.getElementById('rosary-visual-container').classList.remove('show');
+    selectMysteries(getSuggestedMystery());
 }
 
 function selectMysteries(type) {
@@ -259,74 +265,38 @@ function buildRosary() {
         // Our Father for each decade
         rosaryStructure.push({
             type: "Our Father",
-            text: 
-            `Our Father, Who art in heaven,
-            Hallowed be Thy Name.
-            Thy Kingdom come.
-            Thy Will be done, on earth as it is in Heaven.
-            Give us this day our daily bread.
-            And forgive us our trespasses,
-            as we forgive those who trespass against us.
-            And lead us not into temptation,
-            but deliver us from evil.
-
-            Amen.`,
+            text: PRAYERS.ourFather,
             bead: "●",
             mystery: selectedMysteries.names[decade],
             beadType: "our-father"
         });
-        
+
         // 10 Hail Marys for each decade
         for (let hail = 0; hail < 10; hail++) {
             rosaryStructure.push({
                 type: `Hail Mary ${hail + 1}/10`,
-                text: 
-                `Hail Mary,
-                Full of Grace,
-                The Lord is with thee.
-                Blessed art thou among women,
-                and blessed is the fruit
-                of thy womb, Jesus.
-                Holy Mary,
-                Mother of God,
-                pray for us sinners now,
-                and at the hour of death.
-
-                Amen.`,
+                text: PRAYERS.hailMary,
                 bead: "○",
                 mystery: selectedMysteries.names[decade],
                 beadType: "hail-mary"
             });
         }
-        
+
         // Glory Be and Fatima Prayer after each decade
         rosaryStructure.push({
             type: "Glory Be",
-            text: 
-            `Glory be to the Father
-            and to the Son,
-            and to the Holy Spirit.
-            As it was in the beginning, is now,
-            and ever shall be,
-            world without end.
-
-            Amen.`,
+            text: PRAYERS.gloryBe,
             bead: "✦",
             mystery: selectedMysteries.names[decade],
             beadType: "glory-be"
         });
-        
+
         rosaryStructure.push({
-            type: "Fatima Prayer", 
-            text: 
-            `O my Jesus,
-            forgive us our sins,
-            save us from the fires of hell,
-            and lead all souls to Heaven,
-            especially those in most need of Thy mercy.`,
+            type: "Fatima Prayer",
+            text: PRAYERS.fatima,
             bead: "✦",
             mystery: selectedMysteries.names[decade],
-            beadType: "glory-be"
+            beadType: "fatima"
         });
     }
 
@@ -360,124 +330,168 @@ function getOrdinal(num) {
 
 function buildRosaryVisual() {
     allBeadElements = [];
-    let beadIndex = 0;
-    const container = document.querySelector('.rosary-chain');
-    const centerX = container.offsetWidth / 2;
-    const centerY = container.offsetHeight / 2;
-    const loopRadius = 120; // Fixed radius for the circle
-    const verticalOffset = -80; // Move everything up
+    const NS = 'http://www.w3.org/2000/svg';
+    const wrapper = document.querySelector('.visual-wrapper');
+    wrapper.innerHTML = '';
 
-    // Clear existing beads
-    document.querySelectorAll('.rosary-bead').forEach(el => el.remove());
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '-18 -18 336 546');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-    // Opening beads (vertical line above cross, going bottom to top, moved up)
-    const openingContainer = document.createElement('div');
-    openingContainer.className = 'opening-prayers';
-    openingContainer.id = 'opening-prayers-beads';
-    openingContainer.style.position = 'absolute';
-    openingContainer.style.left = '50%';
-    openingContainer.style.bottom = '-50px';
-    openingContainer.style.transform = `translateX(-50%) translateY(${verticalOffset}px)`;
-    openingContainer.style.display = 'flex';
-    openingContainer.style.flexDirection = 'column-reverse';
-    openingContainer.style.alignItems = 'center';
-    openingContainer.style.gap = '2px';
-    container.appendChild(openingContainer);
+    // ─── DEFS ───────────────────────────────────────────────
+    const defs = document.createElementNS(NS, 'defs');
 
-    for (let i = 2; i < 9; i++) {
-        const beadEl = document.createElement('div');
-        beadEl.className = `rosary-bead ${rosaryStructure[i].beadType}`;
-        beadEl.id = `visual-bead-${beadIndex}`;
-        openingContainer.appendChild(beadEl);
-        allBeadElements[beadIndex] = beadEl;
-        beadIndex++;
+    const beadDefs = {
+        'hail-mary':      ['#d8f0ff', '#4da8da', '#1a5f88'],
+        'our-father':     ['#fffde0', '#ffd700', '#8a6200'],
+        'glory-be':       ['#ead6ff', '#8b45d4', '#4e1e8a'],
+        'mystery':        ['#ffd0d0', '#e83838', '#8a0f0f'],
+        'apostles-creed': ['#ccffcc', '#3cb84a', '#1a5c22'],
+        'fatima':         ['#ffe8cc', '#ff8000', '#7a3000'],
+    };
+
+    Object.entries(beadDefs).forEach(([name, [c0, c1, c2]]) => {
+        const g = document.createElementNS(NS, 'radialGradient');
+        g.setAttribute('id', `g-${name}`);
+        g.setAttribute('cx', '38%'); g.setAttribute('cy', '32%'); g.setAttribute('r', '62%');
+        [[c0,'0%'],[c1,'55%'],[c2,'100%']].forEach(([color, offset]) => {
+            const s = document.createElementNS(NS, 'stop');
+            s.setAttribute('offset', offset); s.setAttribute('stop-color', color);
+            g.appendChild(s);
+        });
+        defs.appendChild(g);
+    });
+
+    // Gold chain gradient (diagonal across full viewBox)
+    const cg = document.createElementNS(NS, 'linearGradient');
+    cg.setAttribute('id', 'g-chain');
+    cg.setAttribute('gradientUnits', 'userSpaceOnUse');
+    cg.setAttribute('x1', '0'); cg.setAttribute('y1', '0');
+    cg.setAttribute('x2', '300'); cg.setAttribute('y2', '510');
+    [['#c8930a','0%'],['#fde06a','50%'],['#9a5e10','100%']].forEach(([c,o]) => {
+        const s = document.createElementNS(NS, 'stop');
+        s.setAttribute('offset', o); s.setAttribute('stop-color', c);
+        cg.appendChild(s);
+    });
+    defs.appendChild(cg);
+
+    svg.appendChild(defs);
+
+    // ─── GEOMETRY ───────────────────────────────────────────
+    const cx = 150, cy = 195, rx = 113, ry = 103;
+    const loopBottom = cy + ry;  // 298
+    const loopTop    = cy - ry;  // 92
+
+    const setAttrs = (el, pairs) => { pairs.forEach(([k,v]) => el.setAttribute(k, v)); return el; };
+
+    const drawLine = (x1, y1, x2, y2) => setAttrs(document.createElementNS(NS, 'line'), [
+        ['x1',x1],['y1',y1],['x2',x2],['y2',y2],
+        ['stroke','url(#g-chain)'],['stroke-width','1.6'],['opacity','0.7']
+    ]);
+
+    // ─── CHAIN LINES ────────────────────────────────────────
+    svg.appendChild(setAttrs(document.createElementNS(NS, 'ellipse'), [
+        ['cx',cx],['cy',cy],['rx',rx],['ry',ry],
+        ['fill','none'],['stroke','url(#g-chain)'],['stroke-width','1.8'],['opacity','0.62']
+    ]));
+    svg.appendChild(drawLine(cx, loopBottom, cx, 441));
+    svg.appendChild(drawLine(cx, loopBottom, cx, cy)); // closing prayers rise from bottom up to center
+
+    // ─── BEAD FACTORY ───────────────────────────────────────
+    const beadR = { 'hail-mary':5, 'our-father':7.5, 'glory-be':6, 'mystery':7.5, 'apostles-creed':8.5, 'fatima':6 };
+
+    const makeBead = (x, y, type, idx) => {
+        const el = setAttrs(document.createElementNS(NS, 'circle'), [
+            ['cx',x],['cy',y],['r',beadR[type] ?? 5],
+            ['fill',`url(#g-${type})`],
+            ['stroke','rgba(255,255,255,0.28)'],['stroke-width','0.8'],
+            ['class',`svg-bead bead-type-${type}`],['id',`visual-bead-${idx}`]
+        ]);
+        svg.appendChild(el);
+        allBeadElements[idx] = el;
+        return el;
+    };
+
+    // ─── TAIL BEADS (indices 1-7, from closest-to-loop down to closest-to-cross) ──
+    // Physical order top→bottom: fatima(7), glory-be(6), hm(5), hm(4), hm(3), our-father(2), apostles-creed(1)
+    const tailPhysical = ['fatima','glory-be','hail-mary','hail-mary','hail-mary','our-father','apostles-creed'];
+    const tailStartY = loopBottom + 18;
+    tailPhysical.forEach((type, i) => makeBead(cx, tailStartY + i * 18, type, 7 - i));
+
+    // ─── CROSS (index 0 = Sign of the Cross) ────────────────────────────────────
+    const crossG = setAttrs(document.createElementNS(NS, 'g'), [
+        ['id','visual-bead-0'],['class','svg-bead']
+    ]);
+    const crossCY = tailStartY + 7 * 18 + 14;
+
+    crossG.appendChild(setAttrs(document.createElementNS(NS, 'rect'), [
+        ['x',cx-9],['y',crossCY-18],['width','18'],['height','7'],['rx','1.5'],
+        ['fill','#7a3a08'],['stroke','#c8860a'],['stroke-width','0.6']
+    ]));
+    const inriTxt = setAttrs(document.createElementNS(NS, 'text'), [
+        ['x',cx],['y',crossCY-12],['text-anchor','middle'],
+        ['font-size','4.5'],['fill','#ffd700'],['font-family','serif'],['letter-spacing','0.5']
+    ]);
+    inriTxt.textContent = 'INRI';
+    crossG.appendChild(inriTxt);
+    crossG.appendChild(setAttrs(document.createElementNS(NS, 'rect'), [
+        ['x',cx-3.5],['y',crossCY-10],['width','7'],['height','32'],['rx','2.5'],
+        ['fill','url(#g-chain)']
+    ]));
+    crossG.appendChild(setAttrs(document.createElementNS(NS, 'rect'), [
+        ['x',cx-14],['y',crossCY+2],['width','28'],['height','7'],['rx','2.5'],
+        ['fill','url(#g-chain)']
+    ]));
+    svg.appendChild(crossG);
+    allBeadElements[0] = crossG;
+    let beadIndex = 8;
+
+    // ─── DECADE BEADS on ellipse (indices 8-77) ─────────────
+    for (let i = 0; i < 70; i++) {
+        const angle = Math.PI / 2 - (i / 70) * 2 * Math.PI;
+        const x = cx + rx * Math.cos(angle);
+        const y = cy + ry * Math.sin(angle);
+        const pos = i % 14;
+        const type = pos === 0  ? 'mystery'
+                   : pos === 1  ? 'our-father'
+                   : pos <= 11  ? 'hail-mary'
+                   : pos === 12 ? 'glory-be'
+                   :              'fatima';
+        makeBead(x, y, type, beadIndex++);
     }
 
-    // Main loop (circle), moved up
-    const loopContainer = document.createElement('div');
-    loopContainer.className = 'rosary-loop';
-    loopContainer.style.position = 'absolute';
-    loopContainer.style.left = '50%';
-    loopContainer.style.top = `calc(50% + ${verticalOffset}px)`;
-    loopContainer.style.transform = 'translate(-50%, -50%)';
-    loopContainer.style.width = `${loopRadius * 2}px`;
-    loopContainer.style.height = `${loopRadius * 2}px`;
-    loopContainer.style.border = '3px solid rgba(139, 69, 19, 0.6)';
-    loopContainer.style.borderRadius = '50%';
-    container.appendChild(loopContainer);
+    // ─── CLOSING BEADS rising from bottom of loop to center (indices 78-80) ───
+    makeBead(cx, loopBottom - 26, 'glory-be', beadIndex++); // Hail Holy Queen (78)
+    makeBead(cx, loopBottom - 52, 'glory-be', beadIndex++); // Final Prayer (79)
 
-    // Center medal, moved up
-    const centerMedal = document.createElement('div');
-    centerMedal.className = 'center-medal';
-    centerMedal.style.position = 'absolute';
-    centerMedal.style.left = '50%';
-    centerMedal.style.top = '210%';
-    centerMedal.style.transform = `translate(-50%, -50%) translateY(${verticalOffset}px)`;
-    loopContainer.appendChild(centerMedal);
+    // Sign of the Cross at center (80) — replaces M medal
+    const centerCrossG = setAttrs(document.createElementNS(NS, 'g'), [
+        ['id',`visual-bead-${beadIndex}`],['class','svg-bead']
+    ]);
+    const ccx = cx, ccy = cy;
+    centerCrossG.appendChild(setAttrs(document.createElementNS(NS, 'rect'), [
+        ['x',ccx-9],['y',ccy-20],['width','18'],['height','7'],['rx','1.5'],
+        ['fill','#7a3a08'],['stroke','#c8860a'],['stroke-width','0.6']
+    ]));
+    const cInri = setAttrs(document.createElementNS(NS, 'text'), [
+        ['x',ccx],['y',ccy-14],['text-anchor','middle'],
+        ['font-size','4.5'],['fill','#ffd700'],['font-family','serif'],['letter-spacing','0.5']
+    ]);
+    cInri.textContent = 'INRI';
+    centerCrossG.appendChild(cInri);
+    centerCrossG.appendChild(setAttrs(document.createElementNS(NS, 'rect'), [
+        ['x',ccx-3.5],['y',ccy-13],['width','7'],['height','34'],['rx','2.5'],
+        ['fill','url(#g-chain)']
+    ]));
+    centerCrossG.appendChild(setAttrs(document.createElementNS(NS, 'rect'), [
+        ['x',ccx-14],['y',ccy+2],['width','28'],['height','7'],['rx','2.5'],
+        ['fill','url(#g-chain)']
+    ]));
+    svg.appendChild(centerCrossG);
+    allBeadElements[beadIndex] = centerCrossG;
 
-    // Cross (fixed position at bottom, moved up)
-    const crossEl = document.createElement('div');
-    crossEl.className = 'rosary-bead cross';
-    crossEl.id = `visual-bead-${beadIndex}`;
-    crossEl.style.position = 'absolute';
-    crossEl.style.left = '50%';
-    crossEl.style.bottom = '0%';
-    crossEl.style.transform = `translateX(-50%) translateY(${verticalOffset}px)`;
-    container.appendChild(crossEl);
-    allBeadElements[beadIndex] = crossEl;
-    beadIndex++;
-
-    // Decade beads (positioned exactly on the brown circle, mirrored to the other side)
-    const totalDecadeBeads = 70; // 5 decades * 14 beads
-    for (let i = 0; i < totalDecadeBeads; i++) {
-        const beadEl = document.createElement('div');
-        let beadType;
-        const posInDecade = i % 14;
-        if (posInDecade === 0) beadType = 'mystery';
-        else if (posInDecade === 1) beadType = 'our-father';
-        else if (posInDecade >= 2 && posInDecade <= 11) beadType = 'hail-mary';
-        else beadType = 'glory-be';
-
-        beadEl.className = `rosary-bead ${beadType}`;
-        beadEl.id = `visual-bead-${beadIndex}`;
-
-        // Mirror beads across the vertical axis
-        const angle = (((i / totalDecadeBeads) * 2 * Math.PI - Math.PI / 2) + Math.PI);
-        // Mirror x by subtracting from (loopRadius * 2)
-        const x = (loopRadius * 2) - (loopRadius + loopRadius * Math.cos(angle));
-        const y = loopRadius + loopRadius * Math.sin(angle);
-
-        beadEl.style.position = 'absolute';
-        beadEl.style.left = `${x}px`;
-        beadEl.style.top = `${y}px`;
-        beadEl.style.transform = `translate(-50%, -50%)`;
-        loopContainer.appendChild(beadEl);
-        allBeadElements[beadIndex] = beadEl;
-        beadIndex++;
-    }
-
-    // Closing beads (vertical line above loop, bottom to top), moved up
-    const closingContainer = document.createElement('div');
-    closingContainer.className = 'closing-prayers';
-    closingContainer.id = 'closing-prayers-beads';
-    closingContainer.style.position = 'absolute';
-    closingContainer.style.left = '50%';
-    closingContainer.style.top = `calc(240px + ${verticalOffset}px)`;
-    closingContainer.style.transform = 'translateX(-50%)';
-    closingContainer.style.display = 'flex';
-    closingContainer.style.flexDirection = 'column-reverse';
-    closingContainer.style.alignItems = 'center';
-    closingContainer.style.gap = '8px';
-    container.appendChild(closingContainer);
-
-    for (let i = 0; i < 3; i++) {
-        const beadEl = document.createElement('div');
-        beadEl.className = 'rosary-bead glory-be';
-        beadEl.id = `visual-bead-${beadIndex}`;
-        closingContainer.appendChild(beadEl);
-        allBeadElements[beadIndex] = beadEl;
-        beadIndex++;
-    }
+    wrapper.appendChild(svg);
 }
 
 
@@ -495,28 +509,40 @@ function updateBeadHighlight() {
     const visualIndex = currentPosition - 1;
     
     if (visualIndex >= 0 && visualIndex < allBeadElements.length && allBeadElements[visualIndex]) {
-        // Highlight current bead
-        allBeadElements[visualIndex].classList.add('current');
-        
-        // Mark previous beads as completed
-        for (let i = 1; i < visualIndex; i++) {
-            if (allBeadElements[i]) {
-                allBeadElements[i].classList.add('completed');
-            }
+        const bead = allBeadElements[visualIndex];
+        void bead.getBoundingClientRect(); // force reflow so arrive animation restarts
+        bead.classList.add('current');
+
+        for (let i = 0; i < visualIndex; i++) {
+            if (allBeadElements[i]) allBeadElements[i].classList.add('completed');
         }
     }
 }
 
+function triggerTextAnimation() {
+    const section = document.getElementById('prayer-section');
+    section.classList.remove('fade-in');
+    void section.offsetWidth;
+    section.classList.add('fade-in');
+}
+
 function updateDisplay() {
+    const prayerTextEl = document.getElementById('prayer-text');
+    if (prayerTextEl) prayerTextEl.scrollTop = 0;
+    triggerTextAnimation();
     const current = rosaryStructure[currentPosition];
     
     // Special handling for mystery selection
     if (current.isSelection) {
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const today = dayNames[new Date().getDay()];
+        const options = `1. Monday/Saturday - Joyful Mysteries\n2. Tuesday/Friday - Sorrowful Mysteries\n3. Wednesday/Sunday - Glorious Mysteries\n4. Thursday - Luminous Mysteries`;
         document.getElementById('mystery-title').textContent = 'Choose Your Mysteries';
         document.getElementById('prayer-type').textContent = current.type;
-        document.getElementById('bead-indicator').textContent = current.bead;
-        document.getElementById('prayer-text').textContent = current.text;
-        document.getElementById('position-indicator').textContent = 'Use number keys 1-4 to select, then Spacebar to continue';
+        document.getElementById('prayer-text').textContent = selectedMysteries
+            ? `Today is ${today}.\nSelected: ${mysteryType}\n\nPress Spacebar to begin, or use 1–4 to change:\n\n${options}`
+            : `Today is ${today}.\n\nPlease select which mysteries to pray:\n\n${options}`;
+        document.getElementById('position-indicator').textContent = 'Use number keys 1–4 to select, then Spacebar to continue';
         document.getElementById('decade-counter').textContent = '';
         document.getElementById('rosary-visual-container').classList.remove('show');
         document.getElementById('progress-fill').style.width = '0%';
@@ -532,7 +558,6 @@ function updateDisplay() {
     // Show mystery title if available
     document.getElementById('mystery-title').textContent = mysteryType || '';
     document.getElementById('prayer-type').textContent = current.type;
-    document.getElementById('bead-indicator').textContent = current.bead;
     document.getElementById('prayer-text').textContent = current.text;
 
     // Progress bar
@@ -564,30 +589,23 @@ function updateDisplay() {
 }
 
 function showFinalSlide() {
-    // Hide the main rosary interface
     document.querySelector('.rosary-container').classList.add('hidden');
-    
-    // Show the final slide
-    document.getElementById('final-slide').classList.remove('hidden');
-    
-    // Set your GIF URL here
-    document.getElementById('final-gif').src = "https://media.tenor.com/bWUeVRqW9-IAAAAi/fast-cat-cat-excited.gif";
-    
-    // Add event listener for the restart button
+    const finalSlideEl = document.getElementById('final-slide');
+    finalSlideEl.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => finalSlideEl.classList.add('visible')));
     document.getElementById('restart-button').addEventListener('click', resetToStart);
 }
 
 function resetToStart() {
-    // Hide the final slide
-    document.getElementById('final-slide').classList.add('hidden');
-    
-    // Show the main rosary interface
-    document.querySelector('.rosary-container').classList.remove('hidden');
-    
-    // Reset the rosary
-    resetRosary();
-    currentPosition = 0;
-    updateDisplay();
+    const finalSlideEl = document.getElementById('final-slide');
+    finalSlideEl.classList.remove('visible');
+    setTimeout(() => {
+        finalSlideEl.classList.add('hidden');
+        document.querySelector('.rosary-container').classList.remove('hidden');
+        resetRosary();
+        currentPosition = 0;
+        updateDisplay();
+    }, 600);
 }
 
 // Keyboard controls
@@ -598,7 +616,7 @@ document.addEventListener('keydown', function(e) {
     if (current && current.isSelection) {
         if (['1', '2', '3', '4'].includes(e.key)) {
             if (selectMysteries(e.key)) {
-                document.getElementById('prayer-text').textContent = `You selected: ${mysteryType}\n\nPress Spacebar to begin.`;
+                updateDisplay();
             }
         }
         if (e.code === 'Space' || e.key === ' ') {
@@ -616,6 +634,8 @@ document.addEventListener('keydown', function(e) {
         if (currentPosition < rosaryStructure.length - 1) {
             currentPosition++;
             updateDisplay();
+        } else {
+            resetToStart();
         }
     }
     if (e.code === 'Backspace') {
@@ -646,21 +666,25 @@ document.addEventListener('touchend', function(e) {
 }, { passive: true });
 
 function handleSwipe() {
-    const swipeThreshold = 50; // Minimum swipe distance in pixels
+    const swipeThreshold = 50;
     const swipeDistance = touchEndX - touchStartX;
-    
+
     if (Math.abs(swipeDistance) < swipeThreshold) return;
-    
+
+    const container = document.querySelector('.rosary-container');
+
     if (swipeDistance > 0) {
-        // Swipe right - go to previous prayer
         if (currentPosition > 0) {
             currentPosition--;
+            container.classList.add('swipe-right');
+            setTimeout(() => container.classList.remove('swipe-right'), 300);
             updateDisplay();
         }
     } else {
-        // Swipe left - go to next prayer
         if (currentPosition < rosaryStructure.length - 1) {
             currentPosition++;
+            container.classList.add('swipe-left');
+            setTimeout(() => container.classList.remove('swipe-left'), 300);
             updateDisplay();
         }
     }
