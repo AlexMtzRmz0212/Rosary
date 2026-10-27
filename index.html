@@ -4,74 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rosary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="rosary-container">
+<body data-screen="select">
+    <main id="rosary-container" class="rosary-container">
         <div class="content-column">
-            <div id="mystery-title" class="mystery-title"></div>
-            <div id="prayer-section" class="prayer-section">
-                <div id="prayer-type" class="prayer-type"></div>
-                <div id="prayer-text" class="prayer-text"></div>
-            </div>
-            
-            <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
-            </div>
+            <header class="column-head">
+                <div id="mystery-title" class="mystery-title"></div>
+            </header>
 
-            <div id="position-indicator" class="position-indicator"></div>
-            <div id="decade-counter" class="decade-counter"></div>
-            
-            <div class="controls">
-                <strong>Controls</strong>
-                <span id="control-text"> ⬅️ Backspace: Previous | Spacebar: Next ➡️ | R: Restart </span>
-                <div id="mobile-controls" class="mobile-controls" style="display: none;">
-                    Swipe left / right to navigate
+            <section id="prayer-section" class="prayer-section" aria-live="polite">
+                <!-- One column per selected language, filled in by script.js -->
+                <div id="prayer-cols" class="prayer-cols"></div>
+
+                <div id="language-picker" class="language-picker" role="group" data-i18n-aria="language">
+                    <span class="picker-label" data-i18n="language"></span>
+                    <!-- Language toggles are added by script.js -->
                 </div>
-            </div>
 
+                <div id="mystery-picker" class="mystery-picker" role="group" data-i18n-aria="chooseMysteries">
+                    <button type="button" class="mystery-option" data-key="1" aria-pressed="false">
+                        <span class="option-bead" aria-hidden="true"></span>
+                        <span class="option-name"></span>
+                        <span class="option-days"></span>
+                        <span class="option-today" data-i18n="today" hidden></span>
+                    </button>
+                    <button type="button" class="mystery-option" data-key="2" aria-pressed="false">
+                        <span class="option-bead" aria-hidden="true"></span>
+                        <span class="option-name"></span>
+                        <span class="option-days"></span>
+                        <span class="option-today" data-i18n="today" hidden></span>
+                    </button>
+                    <button type="button" class="mystery-option" data-key="3" aria-pressed="false">
+                        <span class="option-bead" aria-hidden="true"></span>
+                        <span class="option-name"></span>
+                        <span class="option-days"></span>
+                        <span class="option-today" data-i18n="today" hidden></span>
+                    </button>
+                    <button type="button" class="mystery-option" data-key="4" aria-pressed="false">
+                        <span class="option-bead" aria-hidden="true"></span>
+                        <span class="option-name"></span>
+                        <span class="option-days"></span>
+                        <span class="option-today" data-i18n="today" hidden></span>
+                    </button>
+                    <button type="button" id="begin-button" class="button button-primary" data-i18n="begin"></button>
+                </div>
+            </section>
+
+            <footer class="column-foot">
+                <div class="progress-bar" role="progressbar" data-i18n-aria="progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <div id="decade-counter" class="decade-counter">
+                    <span id="decade-ticks" class="decade-ticks" aria-hidden="true"></span>
+                    <span id="decade-label"></span>
+                </div>
+
+                <div class="controls">
+                    <span id="control-text" class="hint" data-i18n="controls"></span>
+                    <span id="mobile-controls" class="hint" data-i18n="swipe" style="display: none;"></span>
+                </div>
+
+                <nav class="nav">
+                    <button type="button" id="back-button" class="button" data-i18n="back"></button>
+                    <button type="button" id="next-button" class="button button-primary" data-i18n="next"></button>
+                </nav>
+            </footer>
         </div>
-        
+
         <div id="rosary-visual-container" class="rosary-visual-container">
-            <div class="visual-wrapper">
-                <div class="rosary-chain">
-                    <!-- Cross -->
-                    <div class="cross" id="bead-cross"></div>
-                    
-                    <!-- Opening prayers chain -->
-                    <div class="opening-chain">
-                        <div class="opening-prayers" id="opening-prayers-beads"></div>
-                    </div>
-
-                    <!-- Main rosary loop -->
-                    <div class="rosary-loop">
-                        <!-- Center medal -->
-                        <div class="center-medal"></div>
-                        
-                        <!-- Five decades around the loop -->
-                        <div class="decade decade-1" id="decade-1-beads"></div>
-                        <div class="decade decade-2" id="decade-2-beads"></div>
-                        <div class="decade decade-3" id="decade-3-beads"></div>
-                        <div class="decade decade-4" id="decade-4-beads"></div>
-                        <div class="decade decade-5" id="decade-5-beads"></div>
-                    </div>
-
-                    <!-- Closing prayers -->
-                    <div class="closing-prayers" id="closing-prayers-beads"></div>
-                </div>
-            </div>
+            <div class="visual-wrapper"></div>
         </div>
-    </div>
+    </main>
 
     <!-- Final Slide -->
     <div id="final-slide" class="final-slide hidden">
         <div class="final-content">
-            <h1>Thank you for praying the Rosary</h1>
+            <h1 data-i18n="finalTitle"></h1>
             <div class="gif-container">
-                <img id="final-gif" src="https://media.tenor.com/bWUeVRqW9-IAAAAi/fast-cat-cat-excited.gif" alt="Celebration">
+                <img id="final-gif" src="https://media.tenor.com/bWUeVRqW9-IAAAAi/fast-cat-cat-excited.gif" alt="">
             </div>
-            <p>God Bless You!</p>
-            <button id="restart-button" class="restart-button">Pray Again</button>
+            <p data-i18n="finalBlessing"></p>
+            <button id="restart-button" class="button button-primary" data-i18n="restart"></button>
             <a href="https://bittobyte.qzz.io" target="_blank" rel="noopener noreferrer" class="bittobyte-btn">
                 <span class="bittobyte-logo">B2B</span>
                 <div class="bittobyte-info">
@@ -83,6 +100,7 @@
         </div>
     </div>
 
+    <script src="lang.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
